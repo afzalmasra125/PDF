@@ -1,18 +1,15 @@
 class ExportsController < ApplicationController 
-  require 'unirest'
-
   def show
-    response = Unirest.get("http://localhost:3000/student/1")
+    @student = Unirest.get("http://soc-resumes-api.herokuapp.com/students/2").body
 
-    # @resume = Student.find(params[:id])
+    respond_to do|format|
+      format.pdf do
+        pdf = ExportPdf.new(@student)
 
-   response.respond_to do|format|
-     format.pdf do
-        pdf = ExportPdf.new
         send_data pdf.render,
-          filename: "export.pdf",
-          type: 'application/pdf',
-          disposition: 'inline'
+                  filename: "export.pdf",
+                  type: 'application/pdf',
+                  disposition: 'inline'
       end
     end
   end 
